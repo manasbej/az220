@@ -18,7 +18,7 @@ public partial class Program
 
     async static Task CreateDeviceAsync()
     {
-        string connectionString = "HostName=az220-iot-hub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=bIOYKMnnhc2IcAaXzDTfIUPczm1ZSyMOWqU0FH6+Gis=";
+        string connectionString = "your-connection-string";
         string deviceId = "sensor-device-02";
 
         // Create a new instance of the RegistryManager using the IoT Hub connection string
