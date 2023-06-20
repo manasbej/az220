@@ -1,26 +1,28 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+using System.Text;
 using Azure;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Common.Exceptions;
 using Microsoft.Azure.Devices.Shared;
+using Newtonsoft.Json;
 
 public partial class Program
 {
+    private const string connectionString = "HostName=az220-iot-hub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=hq0H98HQ4eUC9PEN4/EjmWyhlwShJwLZPhZXhTTx5Bc=";
     public static async Task Main(string[] args)
     {
+        string deviceId = "sensor-device-02";
         Console.WriteLine("Hello, World!");
-        await CreateDeviceAsync();
-
+        //await CreateDeviceAsync(deviceId);
+        //await DeleteDeviceAsync(connectionString, deviceId);
+        //await SendDeviceToCloudMessagesAsync(deviceId);
+        await UpdateDesiredPropertiesAsync(deviceId);
+         
     }
     
 
-    async static Task CreateDeviceAsync()
+    async static Task CreateDeviceAsync(string deviceId)
     {
-        string connectionString = "your-connection-string";
-        string deviceId = "sensor-device-02";
-
         // Create a new instance of the RegistryManager using the IoT Hub connection string
         RegistryManager registryManager = RegistryManager.CreateFromConnectionString(connectionString);
 
@@ -33,7 +35,7 @@ public partial class Program
                 Console.WriteLine("Device already exists!");
                 Console.WriteLine($"Reading Device twin: ");
                 Console.WriteLine($"-----------------------");
-                await GetDeviceTwinAsync(connectionString, deviceId);
+                await GetDeviceTwinAsync(deviceId);
                 return;
             }
 
@@ -49,7 +51,7 @@ public partial class Program
             Console.WriteLine($"Secondary key: {device.Authentication.SymmetricKey.SecondaryKey}");
             Console.WriteLine($"Device twin: ");
             Console.WriteLine($"---------------");
-            await GetDeviceTwinAsync(connectionString, deviceId);
+            await GetDeviceTwinAsync( deviceId);
         }
         catch (DeviceAlreadyExistsException)
         {
@@ -66,7 +68,7 @@ public partial class Program
         }
     }
 
-    async static Task GetDeviceTwinAsync(string connectionString, string deviceId)
+    async static Task GetDeviceTwinAsync(string deviceId)
     {
 
         DeviceClient deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId);
@@ -142,7 +144,7 @@ public partial class Program
         }
     }
 
-    async Task UpdateDesiredPropertiesAsync(string connectionString, string deviceId)
+    async static Task UpdateDesiredPropertiesAsync(string deviceId)
     {
 
         RegistryManager registryManager = RegistryManager.CreateFromConnectionString(connectionString);
@@ -152,7 +154,7 @@ public partial class Program
             Twin twin = await registryManager.GetTwinAsync(deviceId);
 
             // Update desired properties
-            twin.Properties.Desired["propertyName"] = "propertyValue";
+            twin.Properties.Desired["temp"] = "37";
 
             // Update the twin in the IoT Hub
             await registryManager.UpdateTwinAsync(twin.DeviceId, twin, twin.ETag);
@@ -169,6 +171,55 @@ public partial class Program
         }
     }
 
-
+    async static Task SendDeviceToCloudMessagesAsync(string deviceId)  
+        {  
+            //DeviceClient deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);  
+            DeviceClient deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+            try  
+            {  
+                double minTemperature = 20;  
+                double minHumidity = 60;  
+                Random rand = new Random();  
+  
+                while (true)  
+                {  
+                    
+                    double currentTemperature = minTemperature + rand.NextDouble() * 15;  
+                    double currentHumidity = minHumidity + rand.NextDouble() * 20;  
+                    Console.WriteLine("{0} > Preparing message: {1} {2}", DateTime.Now, currentTemperature,currentHumidity );  
+                   // Create JSON message  
+  
+                    var telemetryDataPoint = new  
+                    {  
+                         
+                        temperature = currentTemperature,  
+                        humidity = currentHumidity  
+                    };  
+  
+                    string messageString = "";  
+  
+  
+  
+                    messageString = JsonConvert.SerializeObject(telemetryDataPoint);  
+  
+                    var message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));  
+  
+                    // Add a custom application property to the message.  
+                    // An IoT hub can filter on these properties without access to the message body.  
+                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");  
+  
+                    // Send the telemetry message  
+                    await deviceClient.SendEventAsync(message);  
+                    Console.WriteLine("{0} > Sending message: {1}", DateTime.Now, messageString);  
+                    await Task.Delay(1000 * 10);  
+                  
+                }  
+            }  
+            catch (Exception ex)  
+            {  
+  
+                throw ex;  
+            }  
+        } 
 
 }
