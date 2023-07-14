@@ -15,7 +15,9 @@ Sub CreateCleanArchitecturePresentation()
     With pptSlide.Shapes.Title
         .TextFrame.TextRange.Text = "Clean Architecture in C#"
         .TextFrame.TextRange.Font.Size = 32
+        .TextFrame.TextRange.Font.Color.RGB = RGB(255, 255, 255) ' White text color
     End With
+    pptSlide.Background.Fill.ForeColor.RGB = RGB(51, 51, 51) ' Dark gray background color
     
     ' Slide 2 - Overview of Clean Architecture
     Set pptSlide = pptPres.Slides.Add(2, 1) ' 1 represents the slide layout for the content slide
