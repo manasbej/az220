@@ -1,0 +1,84 @@
+Sub CreateCleanArchitecturePresentation()
+    Dim pptApp As Object
+    Dim pptPres As Object
+    Dim pptSlide As Object
+    
+    ' Create a new instance of PowerPoint
+    Set pptApp = CreateObject("PowerPoint.Application")
+    pptApp.Visible = True
+    
+    ' Create a new presentation
+    Set pptPres = pptApp.Presentations.Add
+    
+    ' Slide 1 - Title Slide
+    Set pptSlide = pptPres.Slides.Add(1, 11) ' 11 represents the slide layout for the title slide
+    With pptSlide.Shapes.Title
+        .TextFrame.TextRange.Text = "Clean Architecture in C#"
+        .TextFrame.TextRange.Font.Size = 32
+    End With
+    
+    ' Slide 2 - Overview of Clean Architecture
+    Set pptSlide = pptPres.Slides.Add(2, 1) ' 1 represents the slide layout for the content slide
+    With pptSlide.Shapes.Title
+        .TextFrame.TextRange.Text = "Overview of Clean Architecture"
+        .TextFrame.TextRange.Font.Size = 24
+    End With
+    With pptSlide.Shapes.Placeholders(2).TextFrame.TextRange
+        .Text = "Clean Architecture is a software architectural pattern that emphasizes separation of concerns and maintainability. It provides a structured way to design and develop applications, keeping the core business logic independent of frameworks, databases, and UI."
+        .Font.Size = 16
+    End With
+    
+    ' Slide 3 - Layers of Clean Architecture
+    Set pptSlide = pptPres.Slides.Add(3, 1)
+    With pptSlide.Shapes.Title
+        .TextFrame.TextRange.Text = "Layers of Clean Architecture"
+        .TextFrame.TextRange.Font.Size = 24
+    End With
+    With pptSlide.Shapes.Placeholders(2).TextFrame.TextRange
+        .Text = "Clean Architecture typically consists of the following layers:" & vbCrLf & _
+                "- Presentation Layer (UI)" & vbCrLf & _
+                "- Application Layer (Business Logic)" & vbCrLf & _
+                "- Domain Layer (Core Domain Models and Entities)" & vbCrLf & _
+                "- Infrastructure Layer (Data Access, External Services)" & vbCrLf & _
+                "- Tests Layer (Unit Tests, Integration Tests)"
+        .Font.Size = 16
+    End With
+    
+    ' Slide 4 - Benefits of Clean Architecture
+    Set pptSlide = pptPres.Slides.Add(4, 1)
+    With pptSlide.Shapes.Title
+        .TextFrame.TextRange.Text = "Benefits of Clean Architecture"
+        .TextFrame.TextRange.Font.Size = 24
+    End With
+    With pptSlide.Shapes.Placeholders(2).TextFrame.TextRange
+        .Text = "Some key benefits of Clean Architecture are:" & vbCrLf & _
+                "- Improved Maintainability and Testability" & vbCrLf & _
+                "- Separation of Concerns" & vbCrLf & _
+                "- Independence from Frameworks and Databases" & vbCrLf & _
+                "- Flexibility for Evolution and Change"
+        .Font.Size = 16
+    End With
+    
+    ' Slide 5 - Conclusion
+    Set pptSlide = pptPres.Slides.Add(5, 1)
+    With pptSlide.Shapes.Title
+        .TextFrame.TextRange.Text = "Conclusion"
+        .TextFrame.TextRange.Font.Size = 24
+    End With
+    With pptSlide.Shapes.Placeholders(2).TextFrame.TextRange
+        .Text = "Clean Architecture provides a robust and scalable approach to software development, enabling long-term maintainability and flexibility. By adhering to the principles of Clean Architecture, developers can create high-quality applications that are easily testable, adaptable, and resilient to changes."
+        .Font.Size = 16
+    End With
+    
+    ' Save the presentation
+    pptPres.SaveAs "C:\Path\To\Your\Presentation.pptx"
+    
+    ' Clean up
+    pptPres.Close
+    pptApp.Quit
+    Set pptSlide = Nothing
+    Set pptPres = Nothing
+    Set pptApp = Nothing
+    
+    MsgBox "Presentation created successfully!"
+End Sub
